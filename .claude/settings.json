@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-NetTCPConnection -LocalPort 8080 -State Listen)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Write-Output \"puerto 8080 libre\")",
+      "PowerShell(Set-Location \"c:\\\\Users\\\\user\\\\Desktop\\\\carpeta proyect final\\\\LibrOnlinefrontendv2\"; $env:NODE_ENV='development'; pnpm --filter @workspace/api-server run start)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue | Select-Object LocalAddress, LocalPort, OwningProcess; Write-Output \"---\"; Get-Process -Id \\(Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue\\).OwningProcess -ErrorAction SilentlyContinue | Select-Object Id, ProcessName, CommandLine)",
+      "PowerShell(Test-NetConnection -ComputerName 127.0.0.1 -Port 8080 -InformationLevel Quiet)",
+      "PowerShell(Test-NetConnection -ComputerName \"::1\" -Port 8080 -InformationLevel Quiet)",
+      "Bash(curl -s --connect-timeout 3 \"http://localhost:8080/api/users\")",
+      "PowerShell(Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess | ForEach-Object { Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue }; Start-Sleep -Milliseconds 500; Set-Location \"c:\\\\Users\\\\user\\\\Desktop\\\\carpeta proyect final\\\\LibrOnlinefrontendv2\"; $env:NODE_ENV='development'; pnpm --filter @workspace/api-server run start)",
+      "Bash(node \"c:\\\\Users\\\\user\\\\Desktop\\\\carpeta proyect final\\\\LibrOnlinefrontendv2\\\\artifacts\\\\api-server\\\\scripts\\\\seed.mjs\")",
+      "PowerShell($conn = Get-NetTCPConnection -LocalPort 5003 -State Listen -ErrorAction SilentlyContinue; if \\($conn\\) { \"Puerto 5003 ACTIVO \\(PID $\\($conn.OwningProcess\\)\\)\" } else { \"Puerto 5003 NO esta escuchando - Gestion_Cursos no esta corriendo\" })",
+      "PowerShell(\\(Invoke-WebRequest -Uri \"http://localhost:8080/api/announcements\" -UseBasicParsing\\).Content)"
+    ]
+  }
+}
