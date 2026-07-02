@@ -1,0 +1,6 @@
+[submodule "LIbrOnline-Backend"]
+	path = LIbrOnline-Backend
+	url = https://github.com/panda2048-max/LIbrOnline-Backend
+[submodule "LibrOnlinefrontendv2"]
+	path = LibrOnlinefrontendv2
+	url = https://github.com/panda2048-max/LibrOnlinefrontendv2
