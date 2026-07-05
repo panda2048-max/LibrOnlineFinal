@@ -1,0 +1,298 @@
+services:
+  #front
+  school:
+    build:
+      context: ./LibrOnlinefrontendv2
+      dockerfile: Dockerfile.school
+    ports:
+      - "80:80"
+    depends_on:
+      - api-server
+
+  #gateway
+  api-server:
+    build:
+      context: ./LibrOnlinefrontendv2
+      dockerfile: Dockerfile.api-server
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - NODE_ENV=production
+      - DATABASE_URL=postgres://postgres:postgres@db-api-server:5432/libronline
+      - USUARIOS_API_URL=http://usuarios-service:5000
+      - CURSOS_API_URL=http://gestion-cursos-service:5003
+      - NOTAS_API_URL=http://notas-service:8000
+      - ASISTENCIA_API_URL=http://asistencia-service:5005
+      - ANOTACIONES_API_URL=http://anotaciones-service:5006
+      - REUNIONES_API_URL=http://gestion-reuniones-service:5002
+    depends_on:
+      db-api-server:
+        condition: service_healthy
+      usuarios-service:
+        condition: service_started
+      gestion-cursos-service:
+        condition: service_started
+      notas-service:
+        condition: service_started
+      asistencia-service:
+        condition: service_started
+      anotaciones-service:
+        condition: service_started
+      gestion-reuniones-service:
+        condition: service_started
+
+  #bd
+  db-api-server:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: libronline
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  db-usuarios:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: usuarios
+      MYSQL_USER: microservicio
+      MYSQL_PASSWORD: system
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  db-asistencia:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: db_asistencia
+      MYSQL_USER: user_asistencia
+      MYSQL_PASSWORD: pass_asistencia
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  db-anotaciones:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: anotaciones
+      MYSQL_USER: microservicio
+      MYSQL_PASSWORD: system
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  db-creacion-eventos:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: creacion_eventos
+      MYSQL_USER: microservicio
+      MYSQL_PASSWORD: system
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  db-direcciones:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: direccion
+      MYSQL_USER: microservicio
+      MYSQL_PASSWORD: system
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  db-gestion-cursos:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: gestion_cursos
+      MYSQL_USER: microservicio
+      MYSQL_PASSWORD: system
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  db-gestion-reuniones:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: gestion_reuniones
+      MYSQL_USER: microservicio
+      MYSQL_PASSWORD: system
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  db-matriculas:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: matriculas
+      MYSQL_USER: matriculas
+      MYSQL_PASSWORD: system
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  db-mensajeria:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: mensajeria
+      MYSQL_USER: microservicio
+      MYSQL_PASSWORD: system
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  db-notas:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: notas
+      MYSQL_USER: microservicio
+      MYSQL_PASSWORD: system
+      MYSQL_ROOT_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 30s
+
+  #back
+  usuarios-service:
+    build: ./LIbrOnline-Backend/Usuarios
+    ports:
+      - "5000:5000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-usuarios:3306/usuarios?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      db-usuarios:
+        condition: service_healthy
+
+  asistencia-service:
+    build: ./LIbrOnline-Backend/Asistencia
+    ports:
+      - "5005:5005"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-asistencia:3306/db_asistencia?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      db-asistencia:
+        condition: service_healthy
+
+  anotaciones-service:
+    build: ./LIbrOnline-Backend/Anotaciones
+    ports:
+      - "5006:5006"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-anotaciones:3306/anotaciones?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      db-anotaciones:
+        condition: service_healthy
+
+  creacion-eventos-service:
+    build: ./LIbrOnline-Backend/Creacion_Eventos
+    ports:
+      - "5004:5004"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-creacion-eventos:3306/creacion_eventos?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      db-creacion-eventos:
+        condition: service_healthy
+
+  direcciones-service:
+    build: ./LIbrOnline-Backend/direcciones
+    ports:
+      - "7000:7000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-direcciones:3306/direccion?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      db-direcciones:
+        condition: service_healthy
+
+  gestion-cursos-service:
+    build: ./LIbrOnline-Backend/Gestion_Cursos
+    ports:
+      - "5003:5003"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-gestion-cursos:3306/gestion_cursos?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      db-gestion-cursos:
+        condition: service_healthy
+
+  gestion-reuniones-service:
+    build: ./LIbrOnline-Backend/Gestion_Reuniones
+    ports:
+      - "5002:5002"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-gestion-reuniones:3306/gestion_reuniones?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      db-gestion-reuniones:
+        condition: service_healthy
+
+  matriculas-service:
+    build: ./LIbrOnline-Backend/matriculas
+    ports:
+      - "9000:9000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-matriculas:3306/matriculas?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      db-matriculas:
+        condition: service_healthy
+
+  mensajeria-service:
+    build: ./LIbrOnline-Backend/Mensajeria-Integrada
+    ports:
+      - "5001:5001"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-mensajeria:3306/mensajeria?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      db-mensajeria:
+        condition: service_healthy
+
+  notas-service:
+    build: ./LIbrOnline-Backend/Notas
+    ports:
+      - "8000:8000"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://db-notas:3306/notas?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    depends_on:
+      db-notas:
+        condition: service_healthy
